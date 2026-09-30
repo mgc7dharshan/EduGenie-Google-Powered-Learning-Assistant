@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        EduGenie - AI Learning Assistant
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <header class="header">
+
+        <div>
+
+            <div class="badge">
+                AI POWERED LEARNING
+            </div>
+
+            <h1>
+                EduGenie
+            </h1>
+
+            <p>
+                Your intelligent learning companion.
+            </p>
+
+        </div>
+
+
+        <div
+            id="status"
+            class="status ready"
+        >
+            Ready
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- MAIN INPUT CARD -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <h2>
+            What do you want to learn?
+        </h2>
+
+
+        <label for="task">
+            Choose a task
+        </label>
+
+
+        <select id="task">
+
+            <option value="qa">
+                Ask a Question
+            </option>
+
+            <option value="explain">
+                Explain a Topic
+            </option>
+
+            <option value="quiz">
+                Generate a Quiz
+            </option>
+
+            <option value="summarize">
+                Summarize Text
+            </option>
+
+            <option value="learn">
+                Create Learning Path
+            </option>
+
+        </select>
+
+
+        <label for="input">
+            Your input
+        </label>
+
+
+        <textarea
+            id="input"
+            rows="9"
+            placeholder="Example: Which is the largest ocean?"
+        ></textarea>
+
+
+        <button
+            id="submitButton"
+            class="primary-button"
+        >
+            Generate
+        </button>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- RESULT CARD -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="result-header">
+
+            <h2>
+                Result
+            </h2>
+
+
+            <button
+                id="copyButton"
+                class="copy-button"
+                hidden
+            >
+                Copy
+            </button>
+
+        </div>
+
+
+        <div
+            id="result"
+            class="result empty"
+        >
+
+            Your EduGenie result will appear here.
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<script>
+
+
+// ========================================================
+// ELEMENTS
+// ========================================================
+
+const taskSelect =
+    document.getElementById("task");
+
+const input =
+    document.getElementById("input");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+const result =
+    document.getElementById("result");
+
+const status =
+    document.getElementById("status");
+
+const copyButton =
+    document.getElementById("copyButton");
+
+
+// ========================================================
+// EXAMPLE PLACEHOLDERS
+// ========================================================
+
+const examples = {
+
+    qa:
+        "Example: Which is the largest ocean?",
+
+    explain:
+        "Example: Explain photosynthesis to a beginner.",
+
+    quiz:
+        "Example: Photosynthesis is the process by which plants use sunlight to make food.",
+
+    summarize:
+        "Paste a long educational paragraph here.",
+
+    learn:
+        "Example: SQL"
+
+};
+
+
+taskSelect.addEventListener(
+    "change",
+    function () {
+
+        input.placeholder =
+            examples[
+                taskSelect.value
+            ];
+
+    }
+);
+
+
+// ========================================================
+// HTML ESCAPE
+// ========================================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(
+            /[&<>"']/g,
+            function (character) {
+
+                const map = {
+
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+
+                };
+
+                return map[
+                    character
+                ];
+
+            }
+        );
+
+}
+
+
+// ========================================================
+// TEXT RENDERER
+// ========================================================
+
+function renderText(text) {
+
+    return escapeHtml(text)
+        .replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        )
+        .replace(
+            /\n/g,
+            "<br>"
+        );
+
+}
+
+
+// ========================================================
+// QUIZ RENDERER
+// ========================================================
+
+function renderQuiz(data) {
+
+    if (data.error) {
+
+        return `
+            <div class="error">
+                ${escapeHtml(data.error)}
+            </div>
+        `;
+
+    }
+
+
+    if (
+        !data.questions ||
+        data.questions.length === 0
+    ) {
+
+        return `
+            <div class="error">
+                No quiz questions were returned.
+            </div>
+        `;
+
+    }
+
+
+    return data.questions
+        .map(
+            function (question, index) {
+
+                return `
+
+                <article
+                    class="quiz-question"
+                >
+
+                    <h3>
+                        ${index + 1}.
+                        ${escapeHtml(
+                            question.question
+                        )}
+                    </h3>
+
+
+                    <div
+                        class="quiz-options"
+                    >
+
+                        ${question.options
+                            .map(
+                                function (
+                                    option,
+                                    optionIndex
+                                ) {
+
+                                    return `
+
+                                    <button
+                                        class="quiz-option"
+                                        data-question="${index}"
+                                        data-answer="${optionIndex}"
+                                    >
+
+                                        ${escapeHtml(
+                                            option
+                                        )}
+
+                                    </button>
+
+                                    `;
+
+                                }
+                            )
+                            .join("")}
+
+                    </div>
+
+
+                    <p
+                        class="quiz-feedback"
+                        id="feedback-${index}"
+                    ></p>
+
+                </article>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+// ========================================================
+// QUIZ EVENT HANDLERS
+// ========================================================
+
+function attachQuizHandlers(data) {
+
+    const buttons =
+        document.querySelectorAll(
+            ".quiz-option"
+        );
+
+
+    buttons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const questionIndex =
+                        Number(
+                            button.dataset.question
+                        );
+
+                    const selectedAnswer =
+                        Number(
+                            button.dataset.answer
+                        );
+
+
+                    const question =
+                        data.questions[
+                            questionIndex
+                        ];
+
+
+                    const feedback =
+                        document.getElementById(
+                            `feedback-${questionIndex}`
+                        );
+
+
+                    const questionButtons =
+                        document.querySelectorAll(
+                            `.quiz-option[data-question="${questionIndex}"]`
+                        );
+
+
+                    questionButtons.forEach(
+                        function (item) {
+
+                            item.disabled = true;
+
+                        }
+                    );
+
+
+                    if (
+                        selectedAnswer ===
+                        question.correct_answer
+                    ) {
+
+                        button.classList.add(
+                            "correct"
+                        );
+
+
+                        feedback.textContent =
+                            "Correct! " +
+                            question.explanation;
+
+
+                    } else {
+
+                        button.classList.add(
+                            "wrong"
+                        );
+
+
+                        const correctButton =
+                            document.querySelector(
+                                `.quiz-option[data-question="${questionIndex}"][data-answer="${question.correct_answer}"]`
+                            );
+
+
+                        if (
+                            correctButton
+                        ) {
+
+                            correctButton.classList.add(
+                                "correct"
+                            );
+
+                        }
+
+
+                        feedback.textContent =
+                            "Not quite. " +
+                            question.explanation;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ========================================================
+// GENERATE REQUEST
+// ========================================================
+
+submitButton.addEventListener(
+    "click",
+    async function () {
+
+        const value =
+            input.value.trim();
+
+
+        if (!value) {
+
+            result.className =
+                "result";
+
+            result.innerHTML = `
+                <div class="error">
+                    Please enter something first.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        let endpoint;
+
+
+        if (
+            taskSelect.value === "learn"
+        ) {
+
+            endpoint =
+                "/learn/recommendations";
+
+        } else {
+
+            endpoint =
+                "/" + taskSelect.value;
+
+        }
+
+
+        submitButton.disabled =
+            true;
+
+
+        copyButton.hidden =
+            true;
+
+
+        status.textContent =
+            "Thinking...";
+
+
+        status.className =
+            "status thinking";
+
+
+        result.className =
+            "result";
+
+
+        result.innerHTML = `
+            <div class="loading">
+                EduGenie is thinking...
+            </div>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify(
+                            {
+                                input: value
+                            }
+                        )
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    "Request failed."
+                );
+
+            }
+
+
+            // --------------------------------------------
+            // QUIZ
+            // --------------------------------------------
+
+            if (
+                taskSelect.value === "quiz"
+            ) {
+
+                result.innerHTML =
+                    renderQuiz(data);
+
+
+                attachQuizHandlers(
+                    data
+                );
+
+
+            }
+
+            // --------------------------------------------
+            // OTHER FEATURES
+            // --------------------------------------------
+
+            else {
+
+                result.innerHTML =
+                    renderText(
+                        data.result ||
+                        "No result returned."
+                    );
+
+
+                copyButton.hidden =
+                    false;
+
+            }
+
+
+            status.textContent =
+                "Ready";
+
+
+            status.className =
+                "status ready";
+
+
+        } catch (error) {
+
+            result.innerHTML = `
+                <div class="error">
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </div>
+            `;
+
+
+            status.textContent =
+                "Error";
+
+
+            status.className =
+                "status error-status";
+
+
+        } finally {
+
+            submitButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+// ========================================================
+// COPY BUTTON
+// ========================================================
+
+copyButton.addEventListener(
+    "click",
+    async function () {
+
+        try {
+
+            await navigator.clipboard.writeText(
+                result.innerText
+            );
+
+
+            copyButton.textContent =
+                "Copied!";
+
+
+            setTimeout(
+                function () {
+
+                    copyButton.textContent =
+                        "Copy";
+
+                },
+                1200
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Copy failed:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>

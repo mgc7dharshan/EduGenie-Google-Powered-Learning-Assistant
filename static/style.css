@@ -1,0 +1,631 @@
+/* ========================================================
+   GLOBAL
+======================================================== */
+
+:root {
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: #172033;
+
+    background: #f5f7fb;
+
+}
+
+
+* {
+
+    box-sizing: border-box;
+
+}
+
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f5f7fb,
+            #eef2f8
+        );
+
+}
+
+
+/* ========================================================
+   PAGE
+======================================================== */
+
+.page {
+
+    width:
+        min(
+            960px,
+            calc(100% - 32px)
+        );
+
+    margin:
+        50px auto;
+
+}
+
+
+/* ========================================================
+   HEADER
+======================================================== */
+
+.header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap: 25px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.badge {
+
+    display: inline-block;
+
+    padding:
+        7px 12px;
+
+    border-radius:
+        999px;
+
+    background:
+        #e8edf6;
+
+    color:
+        #53647e;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        0.15em;
+
+}
+
+
+h1 {
+
+    margin:
+        12px 0 8px;
+
+    font-size:
+        clamp(
+            42px,
+            8vw,
+            68px
+        );
+
+    line-height:
+        1;
+
+}
+
+
+.header p {
+
+    color:
+        #68758b;
+
+    font-size:
+        18px;
+
+}
+
+
+/* ========================================================
+   STATUS
+======================================================== */
+
+.status {
+
+    padding:
+        9px 14px;
+
+    border-radius:
+        999px;
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.status.ready {
+
+    background:
+        #e5f5eb;
+
+    color:
+        #247044;
+
+}
+
+
+.status.thinking {
+
+    background:
+        #fff4d6;
+
+    color:
+        #8a6410;
+
+}
+
+
+.status.error-status {
+
+    background:
+        #ffe3e3;
+
+    color:
+        #9d2929;
+
+}
+
+
+/* ========================================================
+   CARD
+======================================================== */
+
+.card {
+
+    background:
+        white;
+
+    border:
+        1px solid #e1e6ef;
+
+    border-radius:
+        20px;
+
+    padding:
+        26px;
+
+    margin-bottom:
+        20px;
+
+    box-shadow:
+        0 15px 45px
+        rgba(
+            31,
+            47,
+            72,
+            0.07
+        );
+
+}
+
+
+.card h2 {
+
+    margin-top:
+        0;
+
+}
+
+
+/* ========================================================
+   FORM
+======================================================== */
+
+label {
+
+    display:
+        block;
+
+    font-weight:
+        750;
+
+    margin-bottom:
+        8px;
+
+}
+
+
+select,
+textarea {
+
+    width:
+        100%;
+
+    border:
+        1px solid #ccd5e2;
+
+    border-radius:
+        12px;
+
+    padding:
+        13px 14px;
+
+    margin-bottom:
+        20px;
+
+    font:
+        inherit;
+
+    background:
+        white;
+
+    color:
+        #172033;
+
+}
+
+
+select:focus,
+textarea:focus {
+
+    outline:
+        3px solid
+        rgba(
+            73,
+            106,
+            160,
+            0.12
+        );
+
+    border-color:
+        #7892ba;
+
+}
+
+
+textarea {
+
+    resize:
+        vertical;
+
+    min-height:
+        190px;
+
+}
+
+
+/* ========================================================
+   BUTTON
+======================================================== */
+
+.primary-button {
+
+    border:
+        0;
+
+    border-radius:
+        12px;
+
+    padding:
+        13px 21px;
+
+    background:
+        #172033;
+
+    color:
+        white;
+
+    font:
+        inherit;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+}
+
+
+.primary-button:hover {
+
+    opacity:
+        0.92;
+
+}
+
+
+.primary-button:disabled {
+
+    opacity:
+        0.55;
+
+    cursor:
+        not-allowed;
+
+}
+
+
+/* ========================================================
+   RESULT
+======================================================== */
+
+.result-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+}
+
+
+.copy-button {
+
+    border:
+        0;
+
+    border-radius:
+        9px;
+
+    padding:
+        8px 13px;
+
+    background:
+        #edf1f7;
+
+    color:
+        #172033;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+}
+
+
+.result {
+
+    line-height:
+        1.75;
+
+    color:
+        #334057;
+
+}
+
+
+.result.empty {
+
+    color:
+        #8591a4;
+
+}
+
+
+.loading {
+
+    color:
+        #65738a;
+
+}
+
+
+/* ========================================================
+   ERRORS
+======================================================== */
+
+.error {
+
+    padding:
+        13px;
+
+    border-radius:
+        11px;
+
+    background:
+        #fff0f0;
+
+    color:
+        #9b2d2d;
+
+}
+
+
+/* ========================================================
+   QUIZ
+======================================================== */
+
+.quiz-question {
+
+    padding:
+        20px 0;
+
+    border-top:
+        1px solid #e6eaf0;
+
+}
+
+
+.quiz-question:first-child {
+
+    border-top:
+        0;
+
+    padding-top:
+        0;
+
+}
+
+
+.quiz-question h3 {
+
+    margin-top:
+        0;
+
+    line-height:
+        1.45;
+
+}
+
+
+.quiz-options {
+
+    display:
+        grid;
+
+    gap:
+        10px;
+
+}
+
+
+.quiz-option {
+
+    width:
+        100%;
+
+    padding:
+        12px 14px;
+
+    border:
+        0;
+
+    border-radius:
+        11px;
+
+    background:
+        #f0f3f7;
+
+    color:
+        #172033;
+
+    text-align:
+        left;
+
+    font:
+        inherit;
+
+    font-weight:
+        650;
+
+    cursor:
+        pointer;
+
+}
+
+
+.quiz-option:hover {
+
+    background:
+        #e6ebf2;
+
+}
+
+
+.quiz-option:disabled {
+
+    cursor:
+        not-allowed;
+
+}
+
+
+.quiz-option.correct {
+
+    background:
+        #dff5e7;
+
+    color:
+        #21663c;
+
+}
+
+
+.quiz-option.wrong {
+
+    background:
+        #ffe0e0;
+
+    color:
+        #982d2d;
+
+}
+
+
+.quiz-feedback {
+
+    margin-top:
+        12px;
+
+    color:
+        #536177;
+
+}
+
+
+/* ========================================================
+   MOBILE
+======================================================== */
+
+@media (
+    max-width: 650px
+) {
+
+    .page {
+
+        margin:
+            25px auto;
+
+    }
+
+
+    .header {
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .status {
+
+        align-self:
+            flex-start;
+
+    }
+
+
+    .card {
+
+        padding:
+            19px;
+
+    }
+
+}
